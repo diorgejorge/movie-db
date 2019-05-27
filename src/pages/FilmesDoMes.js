@@ -1,12 +1,20 @@
 import React from 'react';
-import { FlatList, StyleSheet} from 'react-native';
-import {Container, Content,Footer, FooterTab, Button, Icon,Picker} from 'native-base'
+import {FlatList, StyleSheet} from 'react-native';
+import {
+    Container,
+    Content,
+    Footer,
+    FooterTab,
+    Button,
+    Icon, Picker
+} from 'native-base'
 import moviedb from "../services/moviedb"
-import MovieCard from '../components/MovieCard'
-import moment from 'moment'
-export default class Main extends React.Component {
+import moment from "moment/moment"
+import MovieCard from "../components/MovieCard";
+
+export default class FilmesDoMes extends React.Component {
     static navigationOptions = {
-        title: 'Estréias da Semana',
+        title: 'Filmes do Mês',
     }
     state = {
         films: [],
@@ -21,36 +29,18 @@ export default class Main extends React.Component {
 
 
     loadMovies = async (page = 1) => {
-        const response = await moviedb.get(`&page=${page}`,{
-            params:{
-                with_genres:this.state.with_genres,
-                'primary_release_date.gte':moment(new Date()).format('YYYY-MM-DD'),
-                'primary_release_date.lte':moment(new Date()).add(7, 'days').format('YYYY-MM-DD')
+        const response = await moviedb.get(`&page=${page}`, {
+            params: {
+                with_genres: '16,10751',
+                'primary_release_date.gte': moment(new Date()).format('YYYY-MM-01'),
+                'primary_release_date.lte': moment(new Date()).format('YYYY-MM-30')
             }
         });
         const {results, ...apiInfo} = response.data;
         this.setState({
             films: [...this.state.films, ...results],
             apiInfo,
-            page,
-            with_genres:this.state.with_genres
-        });
-    };
-
-    loadMoviesCombo = async (with_genres) => {
-        const response = await moviedb.get(`&page=1`,{
-            params:{
-                with_genres:with_genres,
-                'primary_release_date.gte':moment(new Date()).format('YYYY-MM-DD'),
-                'primary_release_date.lte':moment(new Date()).add(7, 'days').format('YYYY-MM-DD')
-            }
-        });
-        const {results, ...apiInfo} = response.data;
-        this.setState({
-            films: results,
-            apiInfo,
-            page:1,
-            with_genres:with_genres
+            page
         });
     };
 
@@ -64,11 +54,30 @@ export default class Main extends React.Component {
     renderItem = ({item}) => (
         <MovieCard movie={item} navigation={this.props.navigation}/>
     )
+    ;
 
     async onValueChange(value: string) {
         await this.loadMoviesCombo(value);
     }
     ;
+
+    loadMoviesCombo = async (with_genres) => {
+        const response = await moviedb.get(`&page=1`, {
+            params: {
+                with_genres: with_genres,
+                'primary_release_date.gte': moment().startOf('month').format('YYYY-MM-DD'),
+                'primary_release_date.lte': moment().endOf('month').format('YYYY-MM-DD')
+            }
+        });
+        const {results, ...apiInfo} = response.data;
+        this.setState({
+            films: results,
+            apiInfo,
+            page: 1,
+            with_genres: with_genres
+        });
+    };
+
 
     render = () => (
         <Container>
@@ -79,7 +88,7 @@ export default class Main extends React.Component {
                     selectedValue={this.state.with_genres}
                     onValueChange={this.onValueChange.bind(this)}
                 >
-                    <Picker.Item label="Animação" value="10751,16" />
+                    <Picker.Item label="Animação" value="10751,16"/>
                     <Picker.Item label="Romance" value="10749"/>
                     <Picker.Item label="Aventura" value="12"/>
                     <Picker.Item label="Ação" value="28"/>
@@ -95,12 +104,14 @@ export default class Main extends React.Component {
             </Content>
             <Footer>
                 <FooterTab>
-                    <Button active onPress={()=>{
-                        this.props.navigation.navigate("Main")}}>
-                        <Icon active name="home" />
+                    <Button onPress={() => {
+                        this.props.navigation.navigate("Main")
+                    }}>
+                        <Icon active name="home"/>
                     </Button>
-                    <Button onPress={()=>{
-                        this.props.navigation.navigate("FilmesDoMes")}}>
+                    <Button active onPress={() => {
+                        this.props.navigation.navigate("FilmesDoMes")
+                    }}>
                         <Icon name="calendar"/>
                     </Button>
                 </FooterTab>

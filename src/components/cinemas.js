@@ -35,6 +35,7 @@ export default class Cinemas extends React.Component {
         this.setState({
             theaters: results,
         });
+
     };
     renderTheaters = ({item}) => (
         <Card>

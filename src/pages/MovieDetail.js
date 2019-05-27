@@ -75,7 +75,7 @@ export default class MovieDetail extends React.Component {
 
                     </CardItem>
                 </Card>
-                <Cinemas movie={this.props.navigation.state.params.movie.title.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")} city={this.state.city}/>
+                <Cinemas movie={this.props.navigation.state.params.movie.title} city={this.state.city}/>
             </Content>
         </Container>
     );

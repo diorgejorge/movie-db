@@ -25,8 +25,21 @@ export default class MovieDetail extends React.Component {
         this.setState({city:value});
     }
 
+    retira_acentos(text)
+    {
+        text = text.toLowerCase();
+        text = text.replace(new RegExp('[ÁÀÂÃ]','gi'), 'a');
+        text = text.replace(new RegExp('[ÉÈÊ]','gi'), 'e');
+        text = text.replace(new RegExp('[ÍÌÎ]','gi'), 'i');
+        text = text.replace(new RegExp('[ÓÒÔÕ]','gi'), 'o');
+        text = text.replace(new RegExp('[ÚÙÛ]','gi'), 'u');
+        text = text.replace(new RegExp('[Ç]','gi'), 'c');
+        return text;
+    }
+
     loadMovies = async () => {
-        const response = await ingressocom.get(`/events/url-key/${encodeURI(this.props.navigation.state.params.movie.title.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, ""))}/partnership/Cin%C3%A9polis`);
+        const movieT = this.retira_acentos(this.props.navigation.state.params.movie.title.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").replace(/[\s]/g, "-").toLowerCase());
+        const response = await ingressocom.get(`/events/url-key/${movieT}/partnership/Cin%C3%A9polis`);
         const results = response.data;
         const images = response.data.images[1] != undefined ? response.data.images[1] : response.data.images[0];
         this.setState({
@@ -62,7 +75,7 @@ export default class MovieDetail extends React.Component {
 
                     </CardItem>
                 </Card>
-                <Cinemas movie={this.state.films} city={this.state.city}/>
+                <Cinemas movie={this.props.navigation.state.params.movie.title.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "")} city={this.state.city}/>
             </Content>
         </Container>
     );

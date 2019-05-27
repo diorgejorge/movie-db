@@ -2,6 +2,7 @@ import React from 'react';
 import {Container, Header, Content, Card, CardItem, Body} from 'native-base'
 import ingressocom from "../services/ingressocom";
 import {FlatList, Text, View} from "react-native";
+import Salas from "../components/salas"
 
 export default class Cinemas extends React.Component {
     state = {
@@ -11,63 +12,38 @@ export default class Cinemas extends React.Component {
     componentDidMount() {
         this.loadTheaters();
     }
-    componentDidUpdate(prevProps: Readonly<P>, prevState: Readonly<S>, snapshot: SS): void {
+
+    componentDidUpdate(prevProps: Readonly<P>, prevState: Readonly<S>, snuapshot: SS): void {
         this.loadTheaters();
     }
-
+    retira_acentos(text)
+    {
+        text = text.toLowerCase();
+        text = text.replace(new RegExp('[ÁÀÂÃ]','gi'), 'a');
+        text = text.replace(new RegExp('[ÉÈÊ]','gi'), 'e');
+        text = text.replace(new RegExp('[ÍÌÎ]','gi'), 'i');
+        text = text.replace(new RegExp('[ÓÒÔÕ]','gi'), 'o');
+        text = text.replace(new RegExp('[ÚÙÛ]','gi'), 'u');
+        text = text.replace(new RegExp('[Ç]','gi'), 'c');
+        return text;
+    }
     loadTheaters = async () => {
-        const response = await ingressocom.get(`/sessions/city/${this.props.city}/event/url-key/${encodeURI('pokemon-detetive-pikachu')}/partnership/a`);
+        const movieT = this.retira_acentos(this.props.movie.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").replace(/[\s]/g, "-").toLowerCase());
+        const url = `/sessions/city/${this.props.city}/event/url-key/${movieT}/partnership/a`;
+        const response = await ingressocom.get(url);
         const results = response.data;
         this.setState({
             theaters: results,
         });
     };
-    renderSessions = ({item}) => (
-            <CardItem body>
-                <CardItem>
-                    <Text>
-                        {item.date.hour} H
-                    </Text>
-                </CardItem>
-                <CardItem>
-                    <Text>
-                        Dia: {item.date.dayAndMonth}
-                    </Text>
-                </CardItem>
-                <CardItem>
-                    <Text>
-                        R$ {item.price}
-                    </Text>
-                </CardItem>
-            </CardItem>
-
-    );
-    renderRoom = ({item}) => (
-        <CardItem body>
-            <CardItem header>
-                <Text>
-                    {item.name}
-                </Text>
-            </CardItem>
-            <CardItem>
-                <FlatList
-                    data={item.sessions}
-                    renderItem={this.renderSessions}
-                    keyExtractor={(item, index) => 'id-session-' + item.id + index}
-                />
-            </CardItem>
-        </CardItem>
-    );
     renderTheaters = ({item}) => (
         <Card>
             <CardItem header>
                 <Text>{item.name}</Text>
             </CardItem>
-            <FlatList
-                data={item.rooms}
-                renderItem={this.renderRoom}
-                keyExtractor={(item, index) => 'id-room-' + item.id + index}
-            />
+            <CardItem body>
+                <Salas salas={item.rooms}/>
+            </CardItem>
         </Card>
     )
     renderItem = ({item}) => (

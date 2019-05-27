@@ -23,24 +23,26 @@ export default class FilmesDoMes extends React.Component {
         with_genres: '10751,16'
     }
 
-    componentDidMount(): void {
-        this.loadMovies();
+    async componentDidMount(): void {
+       await this.loadMovies(this.state.with_genres,1);
     }
 
 
-    loadMovies = async (page = 1) => {
+    loadMovies = async (page =  1) => {
+        const dtIni = moment().startOf('month').format('YYYY-MM-DD');
+        const dtFim = moment().endOf('month').format('YYYY-MM-DD');
         const response = await moviedb.get(`&page=${page}`, {
             params: {
-                with_genres: '16,10751',
-                'primary_release_date.gte': moment(new Date()).format('YYYY-MM-01'),
-                'primary_release_date.lte': moment(new Date()).format('YYYY-MM-30')
+                with_genres: this.state.with_genres,
+                'release_date.gte': dtIni,
+                'release_date.lte': dtFim
             }
         });
         const {results, ...apiInfo} = response.data;
         this.setState({
-            films: [...this.state.films, ...results],
+            films: results,
             apiInfo,
-            page
+            page:page
         });
     };
 
@@ -57,27 +59,10 @@ export default class FilmesDoMes extends React.Component {
     ;
 
     async onValueChange(value: string) {
-        await this.loadMoviesCombo(value);
+        await this.setState({with_genres:value})
+        await this.loadMovies(1);
     }
     ;
-
-    loadMoviesCombo = async (with_genres) => {
-        const response = await moviedb.get(`&page=1`, {
-            params: {
-                with_genres: with_genres,
-                'primary_release_date.gte': moment().startOf('month').format('YYYY-MM-DD'),
-                'primary_release_date.lte': moment().endOf('month').format('YYYY-MM-DD')
-            }
-        });
-        const {results, ...apiInfo} = response.data;
-        this.setState({
-            films: results,
-            apiInfo,
-            page: 1,
-            with_genres: with_genres
-        });
-    };
-
 
     render = () => (
         <Container>
@@ -96,7 +81,7 @@ export default class FilmesDoMes extends React.Component {
                 <FlatList
                     data={this.state.films}
                     renderItem={this.renderItem}
-                    keyExtractor={item => 'id-' + item.id}
+                    keyExtractor={(item,index) => 'id-' + item.id+index}
                     onEndReached={this.loadMore}
                     onEndReachedThreshold={0.1}
                 />

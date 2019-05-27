@@ -38,7 +38,7 @@ export default class Main extends React.Component {
     };
 
     loadMoviesCombo = async (with_genres) => {
-        const response = await moviedb.get(`&page=1`,{
+        const response = await moviedb.get(`&page=${this.state.page}`,{
             params:{
                 with_genres:with_genres,
                 'primary_release_date.gte':moment(new Date()).format('YYYY-MM-DD'),

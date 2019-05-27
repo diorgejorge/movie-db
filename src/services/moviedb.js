@@ -2,7 +2,6 @@ import axios from 'axios/index';
 import {REACT_APP_THEMOVIEDB_KEY} from 'react-native-dotenv'
 
 const moviesdb = axios.create({
-<<<<<<< HEAD
     baseURL: `https://api.themoviedb.org/3/discover/movie?`,
     params:{
         api_key:REACT_APP_THEMOVIEDB_KEY,
@@ -12,8 +11,5 @@ const moviesdb = axios.create({
         include_adult:false,
         include_video:false
     }
-=======
-    baseURL: `https://api.themoviedb.org/3/discover/movie?api_key=${REACT_APP_THEMOVIEDB_KEY}&region=BR&language=pt-BR&with_genres=10751,16&sort_by=release_date.desc&include_adult=false&include_video=false&primary_release_date.gte=${moment(new Date()).format('YYYY-MM-DD')}&primary_release_date.lte=${moment(new Date()).add(7,'days').format('YYYY-MM-DD')}`
->>>>>>> 4970b196bb664b7d89abe0dcadfa0b0548cacc41
 });
 export default moviesdb;
